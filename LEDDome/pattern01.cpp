@@ -28,9 +28,6 @@ static void fadeInOut(const Adafruit_NeoPixel *pixels, const uint8_t red, const 
 }
 
 void showPattern01(const Adafruit_NeoPixel *pixels) {
-  pixels->setBrightness(32);
-  delay(200);
-
   pixels->clear();
   pixels->show();
   delay(200);

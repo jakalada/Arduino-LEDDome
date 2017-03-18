@@ -9,54 +9,45 @@
 
 #include "hue.h"
 
-static void fadeInOut(const Adafruit_NeoPixel *pixels, const uint8_t red, const uint8_t green, const uint8_t blue) {
-  for (int16_t i = 2; i <= 20; i++) {
-    uint8_t r = red * (0.05 * i);
-    uint8_t g = green * (0.05 * i);
-    uint8_t b = blue * (0.05 * i);
-    setAllPixelColor(pixels, r, g, b);
-    pixels->show();
-    delay(30);
-  }
-
-  for (int16_t i = 20; i >= 2; i--) {
-    uint8_t r = red * (0.05 * i);
-    uint8_t g = green * (0.05 * i);
-    uint8_t b = blue * (0.05 * i);
-    setAllPixelColor(pixels, r, g, b);
-    pixels->show();
-    delay(30);
-  }
-}
-
 void showPattern02(const Adafruit_NeoPixel *pixels) {
-  pixels->setBrightness(32);
-  delay(200);
-
   pixels->clear();
   pixels->show();
   delay(200);
 
-  pixels->clear();
-  pixels->show();
-  delay(100);
+  const int16_t pixelCount = pixels->numPixels();
 
-  int16_t pixelCount = pixels->numPixels();
-
-  // ピクセルごとに色相の並びで色を設定
-  for (int16_t i = pixelCount - 1; i >= 0; i--) {
+  int32_t hueColors[pixelCount];
+  for (int16_t i = 0; i < pixelCount; i++) {
     double colorPhase = (double) i / (double) pixelCount;
-    uint32_t color = hue(colorPhase);
-    pixels->setPixelColor(i, color);
+    hueColors[i] = hue(colorPhase);
+  }
+
+  // 1ピクセルごとに点灯させる
+  // 色相の色を順に設定
+  for (int16_t i = pixelCount - 1; i >= 0; i--) {
+    pixels->setPixelColor(i, hueColors[i]);
     pixels->show();
-    delay(100);
+    delay(50);
+  }
+
+  delay(500);
+
+  // 色相を回転させる
+  // 色相の色を1個ずつずらしながら点灯
+  for (int16_t shift = 0; shift < pixelCount * 2; shift++) {
+    for (int16_t i = 0; i < pixelCount; i++) {
+      int16_t hueColorIndex = (i + shift) % pixelCount;
+      pixels->setPixelColor(i, hueColors[hueColorIndex]);
+    }
+    pixels->show();
+    delay(50);
   }
 
   // ピクセルごとに消灯
   for (int16_t i = pixelCount - 1; i >= 0; i--) {
     pixels->setPixelColor(i, 0, 0, 0);
     pixels->show();
-    delay(100);
+    delay(50);
   }
 
   pixels->clear();

@@ -12,14 +12,18 @@ const int neoPixelCount = 100;
 const Adafruit_NeoPixel neoPixels = Adafruit_NeoPixel(neoPixelCount, neoPixelPin, NEO_GRB + NEO_KHZ800);
 
 void setup() {
-  Serial.begin(115200);
-
   neoPixels.begin();
-
+  delay(200);
+  neoPixels.clear();
+  neoPixels.show();
+  delay(200);
+  neoPixels.setBrightness(64);
   delay(1000);
 }
 
 void loop() {
   showPattern01(&neoPixels);
+  delay(1000);
   showPattern02(&neoPixels);
+  delay(3000);
 }
